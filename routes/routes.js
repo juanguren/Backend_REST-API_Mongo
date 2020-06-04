@@ -108,7 +108,7 @@ router.delete("/All_Furniture/delete_item/:id", (req,res) =>{
         if (response.n == 1) {
             res.status(200).json({msg: "Item deleted!"});
         } else{
-            res.status(400).json({msg: "Item not found"});
+            res.status(400).json({msg: "Item not found"}, {err: err});
         }
     })
 });
