@@ -10,7 +10,7 @@ router.use(bodyParser.json());
 // Initialize conection to localhost
 mongoose.connect("mongodb://localhost:27017/mi_base");
 
-function checkIDExists(req, res, next){
+function checkIDUnique(req, res, next){
     let itemID = req.body.id;
     let index;
 
@@ -22,6 +22,22 @@ function checkIDExists(req, res, next){
             next();
         } else{
             res.status(404).json({err: "Element with that same ID already exists"});
+        }
+    });
+}
+
+function checkItemExists(req, res, next){
+    let itemID = req.body.item_id;
+    let index;
+
+    Furniture.find().then((response) =>{
+        index = response.findIndex(element => element.id == itemID);  
+        req.params.foundIndex = index;
+
+        if (index == -1) {
+            res.status(404).json({err: "Item not found. Check the ID"});
+        } else{
+            next();
         }
     });
 }
@@ -47,7 +63,7 @@ router.get("/All_Furniture/:filter", (req, res) =>{
 });
 
 // Create new item
-router.post("/All_Furniture/add_new", checkIDExists, (req, res) =>{
+router.post("/All_Furniture/add_new", checkIDUnique, (req, res) =>{
     const {square_meters, typeOf_Operation, typeOf_Furniture, id} = req.body;
     
     if (square_meters, typeOf_Operation, typeOf_Furniture, id) {
@@ -61,8 +77,27 @@ router.post("/All_Furniture/add_new", checkIDExists, (req, res) =>{
     
 })
 
+// Replace an item completely
+router.put("/All_Furniture/replace/:item_id", (req, res) =>{
+    const itemID = req.params.item_id;
+    Furniture.findOneAndUpdate({id: itemID}, req.body).then((response) =>{
+        res.json(response);
+    })
+});
+
 // Update an item´s property
-router.put("All_Furniture/modify_item", (req, res) =>{
+router.patch("/All_Furniture/modify_item/:item_id", (req, res) =>{
+    let itemID = req.params.item_id;
+    const {pictures} = req.body;
+    Furniture.findOne({id: itemID}).then((response) =>{
+        if (response.length > 0) {
+            response.direction_sent = pictures;
+            response.save();
+            res.status(202).json(response);   
+        } else{
+            res.json({msg: "Item not found"});
+        }
+    })
     //https://www.acamica.com/clases/10832//path-params-query
 });
 
@@ -71,16 +106,6 @@ router.delete("All_Furniture/delete_item", (req,res) =>{
 
 })
 
-
-
-/**
- * const new_Furniture = {
-    typeOf_Operation: "Buy",
-    typeOf_Furniture: "Raw",
-    direction_sent: "Ave 57"
-};
-const newOrder = new Furniture(new_Furniture);
-newOrder.save();
- */
+// TODO --> Test query strings (console.log(req.query))
 
 module.exports = router;
