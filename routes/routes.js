@@ -63,11 +63,11 @@ router.post("/All_Furniture/add_new", checkIDExists, (req, res) =>{
 
 // Update an item´s property
 router.put("All_Furniture/modify_item", (req, res) =>{
-
+    //https://www.acamica.com/clases/10832//path-params-query
 });
 
 // Delete an item
-router.put("All_Furniture/delete_item", (req,res) =>{
+router.delete("All_Furniture/delete_item", (req,res) =>{
 
 })
 
