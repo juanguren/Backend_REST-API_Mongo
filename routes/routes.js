@@ -102,9 +102,16 @@ router.patch("/All_Furniture/modify_item/:item_id", (req, res) =>{
 });
 
 // Delete an item
-router.delete("All_Furniture/delete_item", (req,res) =>{
-
-})
+router.delete("/All_Furniture/delete_item/:id", (req,res) =>{
+    const itemID = req.params.id;
+    Furniture.deleteOne({id: itemID}, (err, response) =>{
+        if (response.n == 1) {
+            res.status(200).json({msg: "Item deleted!"});
+        } else{
+            res.status(400).json({msg: "Item not found"});
+        }
+    })
+});
 
 // TODO --> Test query strings (console.log(req.query))
 
