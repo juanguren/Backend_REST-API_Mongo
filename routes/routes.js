@@ -45,10 +45,12 @@ function checkItemExists(req, res, next){ // Optional here
 
 // This middleware logs every new request to the API
 function logRequests(req, res, next){
+
     let log = {
         date: new Date(),
         path: req.path
     };
+    
     if (req.path =! "/API_Logs") {
         let newLog = new Logs(log);
         newLog.save();
