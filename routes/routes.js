@@ -3,7 +3,8 @@ const express = require("express");
 const router = express.Router();
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const Furniture = require("../data/data");
+const Furniture = require("../data/data_furniture");
+const Logs = require("../data/data_logs");
 
 router.use(bodyParser.json());
 
@@ -26,7 +27,7 @@ function checkIDUnique(req, res, next){
     });
 }
 
-function checkItemExists(req, res, next){
+function checkItemExists(req, res, next){ // Optional here
     let itemID = req.body.item_id;
     let index;
 
@@ -41,6 +42,30 @@ function checkItemExists(req, res, next){
         }
     });
 }
+
+// This middleware logs every new request to the API
+function logRequests(req, res, next){
+    let log = {
+        date: new Date(),
+        path: req.path
+    };
+    if (req.path =! "/API_Logs") {
+        let newLog = new Logs(log);
+        newLog.save();
+        next();
+    } else{
+        next();
+    }
+}
+
+router.use(logRequests);
+
+// Get all API requests
+router.get("/API_Logs", (req, res, next) =>{
+    Logs.find().then((response) =>{
+        res.json(response);
+    })
+})
 
 // Get all items
 router.get("/All_Furniture", (req, res) =>{
