@@ -50,7 +50,7 @@ function logRequests(req, res, next){
         date: new Date(),
         path: req.path
     };
-    
+
     if (req.path =! "/API_Logs") {
         let newLog = new Logs(log);
         newLog.save();
@@ -63,7 +63,7 @@ function logRequests(req, res, next){
 router.use(logRequests);
 
 // Get all API requests
-router.get("/API_Logs", (req, res, next) =>{
+router.get("/API_Logs", (req, res) =>{
     Logs.find().then((response) =>{
         res.json(response);
     })
